@@ -1,0 +1,8 @@
+{
+    "name": "tensorflowjs",
+    "version": "1.0.0",
+    "dependencies": {
+        "colormap": "^2.3.2",
+        "express": "latest"
+    }
+}

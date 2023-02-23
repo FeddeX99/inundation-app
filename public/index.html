@@ -1,0 +1,115 @@
+<html>
+<head>
+    <title>Real time inundation predictions</title>
+    <link rel="icon" type="images/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+        integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+        crossorigin=""/>
+    <link rel="stylesheet" href="mystyle.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <main>
+        <div class = "container">
+            <div class="row">
+                <div class="col" style="height:20px;">
+                    <div class="progress progress-bar progress-bar-striped progress-bar-animated mb-2" >
+                        Loading Model
+                    </div>
+                </div>
+            </div>
+            <div class = 'box-1'>
+                <div class="row">
+                    <div class="h1-text">
+                        Input: Rainfall per hour
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="slider-div" style = "margin-left:50px">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-0" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-1" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="40" class="slider" id= "hour-2" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="20" class="slider" id= "hour-3" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-4" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-5" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-6" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-7" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-8" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-9" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-10" name = "input-rain", orient="vertical">
+                        <input type="range" min="0" max="100" value="0" class="slider" id= "hour-11" name = "input-rain", orient="vertical">
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="rainfall-slider-text" class= "h3-text">Insert the desired rainfall with the sliders</div>
+                </div>
+                <div class="row">
+                    <div id="rainfall-plot" class="rainfall-plot" style="width:100%;height:200px;"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="button-wrapper">
+                    <button type="button" name="button" id="predict-button" class = "predict-button" onclick="Predict()">
+                        <div class = "h2-text">Predict inundation</div>
+                    </button>
+                </div>
+            </div>
+            <div class = "output">
+                <div class = "box-1">
+                    <div class="row">
+                        <div class="h1-text">
+                            Output: Inundation over time per grid cell
+                        </div>
+                        <div class="h3-text" id = "time-slider-text"></div>
+                    </div>
+                    <div class="row">
+                        <div id="timeSlider-div" style="width:100%;">
+                            <input type="range" min="0" max="12" value="0" class="timeSlider" id= "timeSlider" name = "timeSlider">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class = "col-2"><svg class = "legend-color"></svg></div>
+                        <div class = "col-2"><svg class = "legend-color"></svg></div>
+                        <div class = "col-2"><svg class = "legend-color"></svg></div>
+                        <div class = "col-2"><svg class = "legend-color"></svg></div>
+                        <div class = "col-2"><svg class = "legend-color"></svg></div>
+                        <div class = "col-2"><svg class = "legend-color"></svg></div>
+                    </div>
+                    <div class="row">
+                        <div class = "col"><div class = "h4-text legend-text"></div></div>
+                        <div class = "col"><div class = "h4-text legend-text"></div></div>
+                        <div class = "col"><div class = "h4-text legend-text"></div></div>
+                        <div class = "col"><div class = "h4-text legend-text"></div></div>
+                        <div class = "col"><div class = "h4-text legend-text"></div></div>
+                        <div class = "col"><div class = "h4-text legend-text"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container text-center">
+                    <p class="text-muted mb-0 py-2">Inundation predictions are made in real time with a neural network, for more information read: <a href="url">http://essay.utwente.nl/94319/1/Hop_MA_ET.pdf</a> </p>
+                    <p class="text-muted mb-0 py-2">© Created by Fedde Hop, 2023 </p>
+                </div>
+              </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.1/proj4.js" integrity="sha512-aIqYhZWmKBmfxEcdqUuqln8wMYFvGUKw4sqfjNcCoEQgx2iZF26+ikx0kz35uHjwpejMeHCcfHUpCtkohi2raw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="crossorigin=""></script>
+    <script src="https://cdn.plot.ly/plotly-2.18.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js" integrity="sha512-Abr21JO2YqcJ03XGZRPuZSWKBhJpUAR6+2wH5zBeO4wAw4oksr8PRdF+BKIRsxvCdq+Mv4670rZ+dLnIyabbGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="predict.js"></script>
+    
+</body>
+</html>
